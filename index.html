@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="theme.css">
+<title>StockPilot Case Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="device.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{background:var(--canvas);color:var(--ink);font:16px/24px Inter,system-ui,sans-serif;font-feature-settings:"ss01" 1;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+.wrap{max-width:1200px;margin:0 auto;padding:0 32px}
+nav.top{position:sticky;top:0;z-index:20;background:var(--nav-bg);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+nav.top .wrap{display:flex;align-items:center;gap:4px;height:68px;overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+nav.top b{font-size:18px;font-weight:700;margin-right:auto;padding-right:24px}
+nav.top a{font-size:15px;font-weight:500;text-decoration:none;padding:10px 16px;border-radius:999px;transition:background .15s}
+nav.top a:hover{background:var(--soft)}
+nav.top a.on{background:var(--ink);color:var(--on-ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:56px;padding:0 28px;border-radius:999px;font-size:18px;font-weight:500;text-decoration:none}
+.btn.p{background:var(--primary);color:var(--on-primary)}
+.btn.s{background:var(--soft);color:var(--ink)}
+.btn.w{background:var(--band-fg);color:var(--band)}
+.k{font-size:16px;font-weight:500;color:var(--body)}
+h1{font-size:52px;line-height:64px;font-weight:700;margin:12px 0 16px}
+h2{font-size:36px;line-height:44px;font-weight:700;margin:4px 0 12px}
+h3{font-size:24px;line-height:32px;font-weight:700}
+p{color:var(--body);max-width:720px}
+p+p{margin-top:12px}
+section{padding:96px 0}
+section+section{border-top:1px solid var(--line)}
+.lede{font-size:18px;line-height:28px;font-weight:400}
+
+/* hero */
+.hero{padding:64px 0 80px}
+.hero .wrap{display:grid;grid-template-columns:1fr auto;gap:48px;align-items:center}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}
+.meta{display:grid;grid-template-columns:1fr 1fr;gap:0 32px;margin-top:40px;border-top:1px solid var(--line);max-width:620px}
+.meta div{padding:14px 0;border-bottom:1px solid var(--line)}
+.meta span{display:block;font-size:14px;color:var(--body)}
+.meta b{font-weight:600;font-size:16px}
+.duo{display:flex;gap:20px;background:var(--softer);border-radius:16px;padding:32px}
+.duo{gap:28px;padding:36px 40px}
+.duo .rug{zoom:.5}
+.duo .rug:nth-child(2){margin-top:90px}
+
+/* blocks */
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:32px}
+.card{background:var(--softer);border-radius:16px;padding:24px}
+.card h3{margin:4px 0 8px}
+.card p{font-size:16px}
+.big{font-size:64px;line-height:1;font-weight:700;font-variant-numeric:tabular-nums}
+.big.a{color:var(--accent)}
+table{width:100%;border-collapse:collapse;margin-top:28px;font-size:16px}
+th{text-align:left;font-size:14px;font-weight:500;color:var(--body);padding:0 24px 12px 0;border-bottom:1px solid var(--ink)}
+td{padding:18px 24px 18px 0;border-bottom:1px solid var(--line);vertical-align:top;color:var(--body);line-height:24px}
+td:first-child{color:var(--ink);font-weight:600;width:26%}
+.tbl{overflow-x:auto}
+td q{quotes:none;color:var(--ink);font-weight:600}
+td.old{color:var(--mute);text-decoration:line-through;text-decoration-color:var(--mute)}
+.band{background:var(--band);color:var(--band-fg);padding:96px 0}
+.band .k{color:var(--mute)}
+.band p{color:var(--band-body)}
+.band .idea{font-size:44px;line-height:56px;font-weight:700;max-width:960px;margin:12px 0 0;color:var(--band-fg)}
+.band .idea em{font-style:normal;color:#8ec5ff}
+.list{margin-top:24px;border-top:1px solid var(--line);max-width:860px}
+.list li{list-style:none;padding:18px 0;border-bottom:1px solid var(--line);color:var(--body);display:grid;grid-template-columns:260px 1fr;gap:24px}
+.list li b{color:var(--ink);font-weight:600}
+.frame{margin-top:36px;border-radius:16px;overflow:hidden;background:var(--softer)}
+.frame .fb{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 20px;border-bottom:1px solid var(--line)}
+.frame .fb span{font-weight:600}
+.frame .fb a{font-size:15px;font-weight:500;text-decoration:underline;text-underline-offset:4px}
+.frame .vp{position:relative;width:100%;overflow:hidden}
+.frame iframe{display:block;width:1440px;height:900px;border:0;transform-origin:0 0;position:absolute;left:0;top:0;background:var(--canvas)}
+.sw{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}
+.sw div{display:flex;align-items:center;gap:10px;height:48px;padding:0 18px 0 8px;border-radius:999px;background:var(--softer);font-size:15px;font-weight:500}
+.sw i{width:32px;height:32px;border-radius:50%;box-shadow:inset 0 0 0 1px var(--line)}
+.sw small{color:var(--body);font-weight:400}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.chip{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 16px;border-radius:999px;background:var(--softer);font-size:15px;font-weight:500}
+.chip small{color:var(--body);font-weight:400;font-size:14px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:8px}
+.about{display:grid;grid-template-columns:auto 1fr;gap:32px;align-items:center;margin-top:32px}
+.about img{width:144px;height:144px;border-radius:50%;object-fit:cover}
+.about h3{font-size:32px;line-height:40px}
+.about p{color:var(--band-body);font-size:18px;line-height:28px;margin-top:8px}
+footer{padding:48px 0 80px}
+footer p{font-size:14px;line-height:22px;max-width:900px}
+@media (max-width:1100px){.hero .wrap{grid-template-columns:1fr}.duo{justify-content:center}}
+@media (max-width:800px){h1{font-size:40px;line-height:48px}h2{font-size:30px;line-height:38px}.band .idea{font-size:30px;line-height:40px}.g3,.two{grid-template-columns:1fr}.list li{grid-template-columns:1fr;gap:4px}.meta{grid-template-columns:1fr}.duo{padding:20px}.duo .rug{zoom:.36}.about{grid-template-columns:1fr}section,.band{padding:64px 0}.wrap{padding:0 16px}}
+</style>
+</head>
+<body>
+<nav class="top"><div class="wrap"><b>StockPilot</b><a href="#summary">Summary</a><a href="#floor">The floor</a><a href="#balance">Speed vs accuracy</a><a href="#screens">Screens</a><a href="#copy">Copy</a><a href="#decisions">Decisions</a><a href="#system">Design system</a><a href="#next">Next</a><a href="#contact">Contact</a></div></nav>
+
+<header class="hero" id="hero"><div class="wrap">
+  <div>
+    <p class="k">UI/UX design assignment · Inventory management · Handheld</p>
+    <h1>Count blind.<br>Confirm once.<br>Keep walking.</h1>
+    <p class="lede">A stock count mismatch flow for StockPilot, designed for a warehouse associate wearing gloves, holding a box, with 40 bins to go and a supervisor somewhere else on the floor.</p>
+    <div class="cta"><a class="btn p" href="design.html">Play the prototype</a><a class="btn s" href="doc.html">One-page rationale</a></div>
+    <div class="meta">
+      <div><span>Delivered</span><b>4 screens, 1 additional state</b></div>
+      <div><span>Format</span><b>Coded, clickable prototype</b></div>
+      <div><span>Design language</span><b>Uber, adapted for the floor</b></div>
+      <div><span>Device</span><b>Rugged Android scanner, 360 × 740</b></div>
+    </div>
+  </div>
+  <div class="duo" aria-hidden="true">
+    <div class="rug"><i class="gd tl"></i><i class="gd tr"></i><i class="gd bl"></i><i class="gd br"></i><i class="trig l"></i><i class="trig r"></i><i class="vol"></i><i class="pwr"></i><div class="shell"></div><div class="face"></div><div class="win"></div><i class="ear"></i><i class="led"></i><div class="rscr" id="h1p"></div><i class="grille"></i></div>
+    <div class="rug"><i class="gd tl"></i><i class="gd tr"></i><i class="gd bl"></i><i class="gd br"></i><i class="trig l"></i><i class="trig r"></i><i class="vol"></i><i class="pwr"></i><div class="shell"></div><div class="face"></div><div class="win"></div><i class="ear"></i><i class="led"></i><div class="rscr" id="h2p"></div><i class="grille"></i></div>
+  </div>
+</div></header>
+
+<section id="summary"><div class="wrap">
+  <p class="k">Summary</p>
+  <h2>The approval is Ravi’s job. Meena’s job is to keep counting.</h2>
+  <p>Meena scans bin 14-C-03. The system says 120 units of gloves; she counts 96. That’s 20% off, past the 10% rule, so it needs a reason and a supervisor’s approval. The risk in that moment runs both ways: a wrong count gets approved, or she stands still waiting while 40 bins go uncounted.</p>
+  <div class="g3">
+    <div class="card"><p class="k">Accuracy</p><h3>Count blind, confirm once</h3><p>The expected number stays hidden until she has counted. A gap over 10% suggests one recount and shows the likely cause.</p></div>
+    <div class="card"><p class="k">Speed</p><h3>Send it and walk on</h3><p>Approval runs in the background. She holds to send, moves to the next bin, and gets a buzz when Ravi decides.</p></div>
+    <div class="card"><p class="k">Environment</p><h3>Built for gloves and glare</h3><p>High-contrast type, big numbers, 56px pill buttons, no typing anywhere, and vibration plus the scanner’s LED in place of sound.</p></div>
+  </div>
+</div></section>
+
+<section id="floor"><div class="wrap">
+  <p class="k">The floor</p>
+  <h2>Every detail of the scenario became a design rule.</h2>
+  <p>The brief says deciding what matters is part of the task. These are the details I designed around, and what each one changed.</p>
+  <div class="tbl"><table>
+    <tr><th>What’s true on the floor</th><th>What it means</th><th>What I did</th></tr>
+    <tr><td>She’s wearing gloves</td><td>Fine taps and typing are gone.</td><td>56px pill buttons, 52px keys, reason rows where the whole row is the target, and the yellow side buttons to scan. No text field anywhere in the flow.</td></tr>
+    <tr><td>A box in one hand</td><td>One thumb, and the occasional accidental bump.</td><td>Every primary action sits at the bottom, in thumb reach. The one action that commits a change, sending for approval, is hold-to-send so a bump can’t trigger it.</td></tr>
+    <tr><td>The warehouse is noisy</td><td>Sounds get lost.</td><td>Vibration patterns (one pulse for a match, three for a gap) and the scanner’s LED: green for a read, amber for a gap, red for a failed scan.</td></tr>
+    <tr><td>Lighting varies</td><td>Glare in bright aisles, low contrast in dim ones.</td><td>Near-black on white for about 20:1 contrast, 56–64px numerals, bold sentence-case type. Blue for the one action, red only for a gap that needs attention. The light sensor flips to a dark theme in dim aisles.</td></tr>
+    <tr><td>Gaps over 10% need approval</td><td>A rule, not a conversation.</td><td>The allowed gap is shown in units (±12), not just as a percentage. Under 10%, the count saves with no extra screens.</td></tr>
+    <tr><td>40 more bins before shift end</td><td>Every second on this bin is taken from the next one.</td><td>A matching bin takes 5 taps. Approval never blocks her. The next bin is on screen the moment she sends.</td></tr>
+  </table></div>
+  <p style="margin-top:20px">Left out on purpose: stock value, bin capacity, SKU history and movement logs. None of them help Meena decide anything in the moment, and every extra line competes with the number that matters.</p>
+</div></section>
+
+<div class="band"><div class="wrap">
+  <p class="k">The idea</p>
+  <p class="idea">Add accuracy where it’s cheap, protect speed where it’s expensive, and <em>never make Meena wait</em> for someone else’s decision.</p>
+</div></div>
+
+<section id="balance"><div class="wrap">
+  <p class="k">Speed vs accuracy</p>
+  <h2>Where the time goes, and why it’s worth it.</h2>
+  <div class="g3">
+    <div class="card"><div class="big">5</div><h3 style="margin-top:12px">taps for a matching bin</h3><p>Scan, three digits, confirm. No review screen, no dialog.</p></div>
+    <div class="card"><div class="big">8–12</div><h3 style="margin-top:12px">taps for a big gap</h3><p>8 if she keeps her count, 12 with the recommended recount.</p></div>
+    <div class="card"><div class="big a">0</div><h3 style="margin-top:12px">minutes waiting</h3><p>She sends and walks on. Ravi decides in parallel.</p></div>
+  </div>
+  <div class="tbl"><table>
+    <tr><th>Mechanism</th><th>Cost to Meena</th><th>What it buys</th></tr>
+    <tr><td>Blind count</td><td>None</td><td>Seeing “120” first makes people find 120. Hiding it removes that bias for free.</td></tr>
+    <tr><td>Count in cartons of 12</td><td>Saves time</td><td>8 cartons is faster and less error-prone than counting 96 units one by one. The app does the maths.</td></tr>
+    <tr><td>One recommended recount</td><td>About a minute, only on gaps over 10%</td><td>Most big gaps are miscounts. Catching them here saves Ravi a walk to Aisle 14.</td></tr>
+    <tr><td>Reasons with evidence</td><td>Saves typing</td><td>The system shows the unconfirmed pick of exactly 24. She confirms what it found instead of investigating.</td></tr>
+    <tr><td>Hold to send</td><td>Under a second</td><td>A bump from the box can’t send an approval by accident.</td></tr>
+    <tr><td>Background approval</td><td>Saves the whole wait</td><td>The supervisor still approves. She just doesn’t have to stand there while he does.</td></tr>
+  </table></div>
+</div></section>
+
+<section id="screens" style="background:var(--softer)"><div class="wrap">
+  <p class="k">The screens</p>
+  <h2>Four screens and one state. Try them.</h2>
+  <p>Count 96 to see the mismatch, 114 to see a small gap save itself, or 120 for a match. Use the side menu to jump to any screen, or switch to All screens to see them side by side.</p>
+  <div class="frame"><div class="fb"><span>Live prototype</span><a href="design.html" target="_blank">Open full screen</a></div><div class="vp"><iframe src="design.html" title="StockPilot prototype" loading="lazy"></iframe></div></div>
+  <ul class="list" style="max-width:none">
+    <li><b>Before · Scanning</b><span>“Scan bin label” or a yellow side button fires the laser. The screen shows the label to aim at; a green LED and a beep confirm the read.</span></li>
+    <li><b>1 · Blind count</b><span>The expected quantity is hidden. She can count in cartons of 12, and the button repeats her number back: “Confirm 96 units”.</span></li>
+    <li><b>2 · Mismatch</b><span>The gap is the headline, “24 units short”, in the only red on screen. Both counts and the allowed gap sit beneath, with the likely cause.</span></li>
+    <li><b>3 · Reason</b><span>Four reasons in a list, no typing. The first carries the evidence that matches the gap.</span></li>
+    <li><b>4 · Send for approval</b><span>Hold to send and go to the next bin. If Ravi is standing there, his PIN on her scanner settles it on the spot.</span></li>
+    <li><b>Additional state · Scan failed</b><span>Plain cause and fix. The fallback is the 2 check digits on the label, which prove she’s at the right bin; a typed bin code wouldn’t.</span></li>
+  </ul>
+</div></section>
+
+<section id="copy"><div class="wrap">
+  <p class="k">UX copy</p>
+  <h2>On a 6-inch screen, the words are most of the interface.</h2>
+  <p>Every string was written to answer “what happens if I tap this?” or “what do I do now?”. The rules: say the number, say what happens next, use her words, never blame her.</p>
+  <div class="tbl"><table>
+    <tr><th>Moment</th><th>Typical system copy</th><th>What StockPilot says</th></tr>
+    <tr><td>Confirming a count</td><td class="old">Submit</td><td><q>Confirm 96 units</q> The number and unit repeated back as a last check.</td></tr>
+    <tr><td>Blind count</td><td class="old">Expected qty: —</td><td><q>Count what’s on the shelf. We’ll compare after.</q> So a hidden number doesn’t look like a bug.</td></tr>
+    <tr><td>The gap</td><td class="old">Variance detected: −20.0%</td><td><q>24 units short</q> Neutral, concrete, in the unit she counted.</td></tr>
+    <tr><td>Skipping the recount</td><td class="old">Proceed</td><td><q>Keep 96 and add a reason</q> Says what happens to her number.</td></tr>
+    <tr><td>Choosing a reason</td><td class="old">Select variance code</td><td><q>Why is it short?</q> The question a person would ask out loud.</td></tr>
+    <tr><td>After sending</td><td class="old">Approval pending</td><td><q>You don’t need to wait. Go to the next bin and we’ll buzz you when he decides.</q> The most important line in the flow.</td></tr>
+    <tr><td>Supervisor nearby</td><td class="old">Alternative authorisation</td><td><q>Ravi’s here? Approve with his PIN</q> The real situation, in her words.</td></tr>
+    <tr><td>Scan failure</td><td class="old">Error E-102: decode failed</td><td><q>Can’t read this label</q> Blames the label, then gives one fix: tilt and hold a hand’s length away.</td></tr>
+  </table></div>
+</div></section>
+
+<section id="decisions"><div class="wrap">
+  <p class="k">Decisions</p>
+  <h2>What I chose, and what I turned down.</h2>
+  <div class="tbl"><table>
+    <tr><th>Decision</th><th>Rejected</th><th>Why</th></tr>
+    <tr><td>Blind count</td><td>Show the expected number next to the input</td><td>It anchors the count. The number appears only after she confirms hers.</td></tr>
+    <tr><td>Recommend one recount</td><td>Force a recount on every gap</td><td>Forcing it punishes correct counts. Recommending it catches most miscounts, and the recount is blind too.</td></tr>
+    <tr><td>Background approval</td><td>A waiting screen until Ravi responds</td><td>Waiting is the real cost of a mismatch. The bin stays flagged, she gets a buzz, and Undo covers mistakes.</td></tr>
+    <tr><td>Hold to send</td><td>A tap, or slide-to-confirm</td><td>A tap is easy to bump. A slide needs a steady drag and a free hand. A hold works with one gloved thumb.</td></tr>
+    <tr><td>A list of reasons with evidence</td><td>A dropdown, or a text box</td><td>Dropdowns are tiny and typing in gloves is slow. Fixed reasons also give Ravi data he can compare.</td></tr>
+    <tr><td>Check digits as the scan fallback</td><td>Type the bin code</td><td>Typing “14-C-03” is slow and lets her count the wrong bin. Two digits printed on the label prove where she is.</td></tr>
+    <tr><td>Blue for action, red only for the gap</td><td>Colour on every status</td><td>Blue marks the one thing to press on each screen. Red is kept for the gap alone and paired with neutral words (“24 units short”), so it reads as “look here”, not as her mistake. Green only confirms a match or a scan.</td></tr>
+  </table></div>
+</div></section>
+
+<section id="system" style="background:var(--softer)"><div class="wrap">
+  <p class="k">Design system</p>
+  <h2>Why Uber’s design language, and what I changed.</h2>
+  <p>I compared four systems from getdesign.md against Meena’s conditions. Uber’s fits best because its own product is used the same way: glanced at on the move, in harsh sun or at night, by someone in the middle of a job.</p>
+  <div class="tbl"><table>
+    <tr><th>System</th><th>Verdict</th><th>Reason</th></tr>
+    <tr><td>Uber</td><td>Chosen</td><td>Black and white for maximum contrast, bold sentence-case headings, pill buttons on every action, flat surfaces. Built for glancing.</td></tr>
+    <tr><td>Apple</td><td>Close second</td><td>Calm and familiar, but made for editorial reading: lighter headlines and a blue link style that fades in glare.</td></tr>
+    <tr><td>Coinbase</td><td>Tried first</td><td>Clean, but weight-400 headlines and grey body text lose contrast at arm’s length.</td></tr>
+    <tr><td>Shopify</td><td>Ruled out</td><td>Cinematic black-on-black with thin display type, which fails in glare.</td></tr>
+  </table></div>
+  <div class="two">
+    <div>
+      <h3 style="margin-top:40px">Tokens</h3>
+      <div class="sw">
+        <div><i style="background:#1447e6"></i>Primary <small>#1447e6</small></div>
+        <div><i style="background:#0a0a0a"></i>Foreground <small>#0a0a0a</small></div>
+        <div><i style="background:#fff"></i>Background <small>#fff</small></div>
+        <div><i style="background:#f4f4f5"></i>Secondary <small>#f4f4f5</small></div>
+        <div><i style="background:#737373"></i>Muted fg <small>#737373</small></div>
+        <div><i style="background:#e5e5e5"></i>Border <small>#e5e5e5</small></div>
+        <div><i style="background:#e7000b"></i>Destructive <small>#e7000b</small></div>
+      </div>
+      <p style="margin-top:16px">Inter at 700 for headings and numbers, 400–500 for everything else, as Uber’s documented substitute. Tabular figures so counts don’t jump as they change.</p>
+    </div>
+    <div>
+      <h3 style="margin-top:40px">Floor adaptations</h3>
+      <ul class="list" style="margin-top:12px">
+        <li style="grid-template-columns:1fr"><span><b>Colour added with a job.</b> Uber is black and white. I added a blue primary for the one action per screen, red only for a gap that needs attention, and green only for a confirmed match.</span></li>
+        <li style="grid-template-columns:1fr"><span><b>Bigger targets.</b> Uber’s 44px buttons grow to 56px for gloves, keys to 52px.</span></li>
+        <li style="grid-template-columns:1fr"><span><b>Readable disabled buttons.</b> The instruction (“Enter a count”) stays legible in glare.</span></li>
+      </ul>
+    </div>
+  </div>
+  <h3 style="margin-top:56px">Patterns adapted from 15 component libraries</h3>
+  <p style="margin-top:8px">Rebuilt in plain HTML, CSS and JavaScript rather than installed, so they run on a low-end scanner. The patterns and motion come from these libraries; the code is written for this device.</p>
+  <div class="chips">
+    <span class="chip">Hold to confirm <small>uiarc · spectrum ui · awesmos</small></span>
+    <span class="chip">OTP input <small>kobra</small></span>
+    <span class="chip">Avatar extended <small>spaceui</small></span>
+    <span class="chip">Segmented control <small>useplanes · uiarc</small></span>
+    <span class="chip">Quantity stepper <small>spectrum ui</small></span>
+    <span class="chip">Number ticker <small>spectrum ui</small></span>
+    <span class="chip">Radio cards <small>uiarc</small></span>
+    <span class="chip">Approval card <small>useplanes · beautifului</small></span>
+    <span class="chip">Toast + undo <small>spectrum ui · bencho</small></span>
+    <span class="chip">Bottom sheet <small>uiarc</small></span>
+    <span class="chip">Form error <small>bencho</small></span>
+    <span class="chip">Shimmer text <small>bencho</small></span>
+    <span class="chip">Stat card <small>easyui</small></span>
+    <span class="chip">Notification <small>lightswind</small></span>
+  </div>
+  <p style="margin-top:20px">Looked at and left out: WebGL shaders, liquid glass, 3D carousels and scratch cards (awesmos, lightswind, useplanes, spaceui), and slide-to-confirm (spaceui, bencho). A rugged scanner has a weak GPU, a glare-filled screen and a battery that must last a shift. Effects cost all three and don’t help Meena count. Designeer, ovio and prompt-motion were motion references only. Not Quite Unicorns makes Bubble components, which don’t apply to a coded build.</p>
+</div></section>
+
+<section id="next"><div class="wrap">
+  <p class="k">Assumptions and next steps</p>
+  <h2>What I assumed, and how I’d know it works.</h2>
+  <div class="two">
+    <div>
+      <h3 style="margin-top:24px">Assumptions</h3>
+      <ul class="list" style="margin-top:12px">
+        <li style="grid-template-columns:1fr"><span>Units are pairs; gloves come in cartons of 12.</span></li>
+        <li style="grid-template-columns:1fr"><span>Each bin holds one form of stock, either full cartons or loose units. A bin with both is out of scope; the counter enters the total in units.</span></li>
+        <li style="grid-template-columns:1fr"><span>The 10% rule compares against the system quantity, in either direction. Within 10%, the count saves without approval.</span></li>
+        <li style="grid-template-columns:1fr"><span>Supervisors can approve from their own device; a PIN covers approval in person.</span></li>
+        <li style="grid-template-columns:1fr"><span>The warehouse system knows about unconfirmed picks for each bin.</span></li>
+        <li style="grid-template-columns:1fr"><span>The device is a rugged Android scanner (360 × 740) with yellow scan triggers. System UI such as bottom sheets and snackbars follows Android’s Material 3.</span></li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="margin-top:24px">How I’d measure it</h3>
+      <ul class="list" style="margin-top:12px">
+        <li style="grid-template-columns:1fr"><span><b>Time per bin</b>, split by matching and mismatched bins.</span></li>
+        <li style="grid-template-columns:1fr"><span><b>Recount resolution rate:</b> the share of big gaps that a recount clears.</span></li>
+        <li style="grid-template-columns:1fr"><span><b>Idle time after sending</b>, which should be close to zero.</span></li>
+        <li style="grid-template-columns:1fr"><span><b>Approved adjustments that hold up</b> in later spot checks.</span></li>
+        <li style="grid-template-columns:1fr"><span><b>Undo rate</b>, as a signal of accidental sends.</span></li>
+      </ul>
+      <h3 style="margin-top:32px">With two more weeks</h3>
+      <p style="margin-top:8px">Test target sizes and hold duration with associates in real gloves. Design the offline queue for dead zones, the wrong-item-in-bin state, and batch approvals for supervisors. Localise for a multilingual workforce.</p>
+    </div>
+  </div>
+</div></section>
+
+<div class="band" id="contact"><div class="wrap">
+  <p class="k">About me</p>
+  <div class="about">
+    <img src="assets/sarda.jpg" alt="Kumari Sarda Rani">
+    <div>
+      <h3>Kumari Sarda Rani</h3>
+      <p>Product designer with a biotech background. I swapped lab experiments for design experiments, and I still work the same way: ask, test, learn.</p>
+      <div class="cta" style="margin-top:24px"><a class="btn w" href="https://encouraging-jargon-080429.framer.app/" target="_blank" rel="noopener">See my portfolio</a></div>
+    </div>
+  </div>
+</div></div>
+
+<footer><div class="wrap">
+  <p>All names and data are fictional. The design language is an interpretation of Uber’s public design, via getdesign.md; this work isn’t affiliated with Uber. The scanner is drawn in CSS. Component patterns are credited above. Fonts: Inter, Roboto.</p>
+</div></footer>
+
+<script src="app.js"></script>
+<script>
+StockPilot.mount(document.getElementById('h1p'), { interactive: false, preset: { scr: 'count', mode: 'p', entry: '8' } });
+StockPilot.mount(document.getElementById('h2p'), { interactive: false, preset: { scr: 'variance', counts: [96] } });
+function fit() { document.querySelectorAll('.frame .vp').forEach(function (v) { var f = v.querySelector('iframe'), k = v.clientWidth / 1440; f.style.transform = 'scale(' + k + ')'; v.style.height = (900 * k) + 'px'; }); }
+addEventListener('resize', fit); fit();
+var links = [].slice.call(document.querySelectorAll('nav.top a')), secs = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+function spy() { var cur = -1; secs.forEach(function (s, i) { if (s && s.getBoundingClientRect().top <= 120) cur = i; }); if (innerHeight + scrollY >= document.body.scrollHeight - 4) cur = secs.length - 1; links.forEach(function (a, i) { a.classList.toggle('on', i === cur); }); }
+addEventListener('scroll', spy, { passive: true }); spy();
+</script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="theme.css">
+<title>StockPilot Design Rationale</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--desk);color:var(--ink);font:15px/23px Inter,system-ui,sans-serif;font-feature-settings:"ss01" 1;-webkit-font-smoothing:antialiased;padding:40px 16px 80px}
+.page{max-width:794px;margin:0 auto;background:var(--paper);border-radius:16px;padding:48px 56px}
+.top{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap}
+.k{font-size:14px;font-weight:500;color:var(--body)}
+.back{font-size:14px;font-weight:500;color:var(--ink)}
+h1{font-size:32px;line-height:40px;font-weight:700;margin:6px 0 8px}
+.lede{color:var(--body);font-size:16px;line-height:24px}
+h2{font-size:20px;line-height:28px;font-weight:700;margin:28px 0 8px;padding-top:20px;border-top:1px solid var(--ink)}
+ul{list-style:none}
+li{padding:7px 0;border-bottom:1px solid var(--line);color:var(--body)}
+li:last-child{border-bottom:0}
+li b{color:var(--ink);font-weight:600}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.nums div{background:var(--soft);border-radius:12px;padding:12px 14px;font-size:14px;line-height:20px;color:var(--body)}
+.nums b{display:block;font-size:28px;line-height:34px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.nums b.a{color:var(--accent)}
+.foot{margin-top:20px;font-size:13px;line-height:20px;color:var(--body)}
+@media (max-width:640px){.page{padding:28px 20px}.nums{grid-template-columns:1fr}}
+@page{size:A4;margin:12mm}
+@media print{body{background:#fff;padding:0;font-size:12.5px;line-height:18px}.page{padding:0;max-width:none;border-radius:0}.back{display:none}h1{font-size:24px;line-height:30px}.lede{font-size:13px;line-height:19px}h2{font-size:15px;line-height:20px;margin:14px 0 4px;padding-top:10px}li{padding:4px 0}.nums{margin-top:8px}.nums div{padding:8px 10px;font-size:12px;line-height:16px;-webkit-print-color-adjust:exact;print-color-adjust:exact}.nums b{font-size:20px;line-height:26px}.foot{font-size:11px;line-height:15px;margin-top:10px}}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="top"><p class="k">StockPilot · Stock count mismatch · Design rationale</p><a class="back" href="index.html">Back to the case study</a></div>
+  <h1>Count blind. Confirm once. Keep walking.</h1>
+  <p class="lede">Meena needs to resolve a 24-unit gap at bin 14-C-03 without stopping her shift. The design adds accuracy where it’s cheap, protects speed where it’s expensive, and never makes her wait for someone else’s decision.</p>
+
+  <h2>How the physical environment shaped the design</h2>
+  <ul>
+    <li><b>Gloves and a box in one hand.</b> 56px pill buttons, 52px keys, whole-row targets and yellow side buttons to scan, with no typing anywhere. Primary actions sit at the bottom, in thumb reach. The one action that commits a change, sending for approval, is hold-to-send, so a bump can’t trigger it.</li>
+    <li><b>Noise.</b> Feedback is felt and seen, not heard: one vibration for a match, three for a gap, and the scanner’s LED glows green, amber or red.</li>
+    <li><b>Varying light.</b> Near-black on white (about 20:1 contrast), 56–64px numerals and bold sentence-case type. Blue marks the one action to press, red appears only for a gap that needs attention, and green only for a confirmed match. Status is never shown by colour alone. In dim aisles, the light sensor flips the screen to a dark theme.</li>
+    <li><b>Standing and moving.</b> Each screen answers one question and has one blue primary button. The bin code and the gap are the largest things on screen.</li>
+  </ul>
+
+  <h2>How I balanced speed with accuracy</h2>
+  <ul>
+    <li><b>Accuracy where it’s cheap.</b> A blind count, so the system’s 120 can’t anchor her. Counting in cartons of 12. One recommended (not forced) recount when the gap is over 10%. Check digits instead of typed bin codes when a label won’t scan. Reasons chosen from a list, with the matching evidence shown.</li>
+    <li><b>Speed where it’s expensive.</b> Matches and gaps within 10% save straight away. Approval runs in the background: she sends it, walks to the next bin and gets a buzz when Ravi decides. If Ravi is beside her, his PIN settles it there. Undo replaces confirmation dialogs.</li>
+  </ul>
+  <div class="nums">
+    <div><b>5</b>taps for a matching bin</div>
+    <div><b>8–12</b>taps for a gap over 10%, with or without recount</div>
+    <div><b class="a">0</b>minutes waiting for approval</div>
+  </div>
+
+  <h2>Assumptions</h2>
+  <ul>
+    <li>Units are pairs, 12 per carton. The 10% rule compares against the system quantity in either direction; within 10%, the count saves without approval.</li>
+    <li>Each bin holds one form of stock, either full cartons or loose units. A bin with both is out of scope; the counter enters the total in units.</li>
+    <li>Supervisors can approve from their own device, and the warehouse system knows about unconfirmed picks for each bin.</li>
+    <li>The device is a rugged Android scanner (360 × 740) with yellow scan triggers; system sheets and snackbars follow Material 3.</li>
+  </ul>
+  <p class="foot">Design language: Uber’s, via getdesign.md, adapted with a blue primary, a red attention colour and glove-sized targets. Patterns adapted from uiarc, spectrum ui, kobra, spaceui, useplanes, bencho, easyui, lightswind and others; rebuilt in plain code for a low-end device.</p>
+</div>
+</body>
+</html>

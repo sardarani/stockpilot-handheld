@@ -1,0 +1,7 @@
+/* Page tokens (shadcn neutral + blue). Pages stay light; only the handheld app has a dark (dim aisle) theme. */
+:root{
+  --ink:#0a0a0a;--body:#737373;--mute:#a1a1a1;--canvas:#ffffff;--soft:#f4f4f5;--softer:#f5f5f5;--pressed:#e5e5e5;--line:#e5e5e5;
+  --accent:#e7000b;--primary:#1447e6;--on-primary:#eff6ff;--on-ink:#ffffff;--ring:#a1a1a1;
+  --nav-bg:rgba(255,255,255,.94);--band:#0a0a0a;--band-fg:#ffffff;--band-body:#d4d4d4;--paper:#ffffff;--desk:#f4f4f5;
+  color-scheme:light;
+}

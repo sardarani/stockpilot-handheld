@@ -1,0 +1,13 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "stockpilot",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "/Users/kumarisardarani/Downloads/Sarda's Assignment/.claude/serve.mjs"
+      ],
+      "port": 5177
+    }
+  ]
+}

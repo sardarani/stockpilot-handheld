@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<link rel="stylesheet" href="theme.css">
+<title>StockPilot Prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="device.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{background:var(--canvas);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif;font-feature-settings:"ss01" 1;-webkit-font-smoothing:antialiased;overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+.bar{height:72px;display:flex;align-items:center;gap:12px;padding:0 32px;border-bottom:1px solid var(--line)}
+.brand{font-weight:700;font-size:20px;margin-right:auto;white-space:nowrap}
+.brand small{font-weight:400;color:var(--body);font-size:16px;margin-left:10px}
+.tabs{display:flex;background:var(--soft);border-radius:999px;padding:4px}
+.tabs button{height:40px;padding:0 20px;border-radius:999px;font-weight:500;font-size:15px;color:var(--body)}
+.tabs button.on{background:var(--ink);color:var(--on-ink)}
+.tg{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:500;height:48px;padding:0 18px 0 12px;border-radius:999px;background:var(--soft);white-space:nowrap}
+.tg:hover{background:var(--pressed)}
+.tg .sw{width:36px;height:22px;border-radius:999px;background:var(--mute);position:relative;transition:background .2s}
+.tg .sw::after{content:"";position:absolute;left:3px;top:3px;width:16px;height:16px;border-radius:50%;background:var(--canvas);transition:transform .2s}
+.tg.on .sw{background:var(--primary)}.tg.on .sw::after{transform:translateX(14px)}
+
+#play{height:calc(100% - 72px);display:grid;grid-template-columns:290px 1fr 370px;gap:24px;padding:24px 32px}
+.steps,.notes{overflow:auto;padding:0 2px 24px;scrollbar-width:none}
+.grp{font-size:14px;font-weight:500;color:var(--body);margin:22px 0 8px}
+.grp:first-child{margin-top:0}
+.st{display:flex;gap:14px;align-items:center;width:100%;text-align:left;padding:10px 14px;border-radius:12px;margin-bottom:2px}
+.st:hover{background:var(--softer)}
+.st.on{background:var(--soft)}
+.st .n{width:32px;height:32px;border-radius:50%;background:var(--soft);display:grid;place-items:center;font-weight:600;font-size:13px;flex:none;font-variant-numeric:tabular-nums}
+.st.on .n{background:var(--ink);color:var(--on-ink)}
+.st b{display:block;font-size:15px;font-weight:600;line-height:21px}
+.st span{font-size:13.5px;color:var(--body)}
+.ctl{display:flex;flex-direction:column;gap:8px}
+.ctl button{height:44px;border-radius:999px;background:var(--soft);font-weight:500;font-size:14.5px;text-align:left;padding:0 18px}
+.ctl button:hover{background:var(--pressed)}
+.ctl button.armed{background:var(--ink);color:var(--on-ink)}
+.keys{font-size:13.5px;color:var(--body);line-height:21px;margin-top:14px}
+.keys b{color:var(--ink)}
+kbd{font:600 12px/1 Inter;border-radius:6px;padding:3px 7px;background:var(--soft);color:var(--ink)}
+.y{display:inline-block;background:#f5b800;color:#000;border-radius:4px;padding:0 6px;font-weight:600;font-size:12.5px}
+.stage{display:grid;place-items:center;min-height:0;background:var(--softer);border-radius:16px;overflow:hidden}
+.stage .rug{zoom:var(--z,.8)}
+.notes .card{border-radius:16px;padding:22px;margin-bottom:12px;background:var(--softer)}
+.notes .k{font-size:14px;font-weight:500;color:var(--body)}
+.notes h2{font-weight:700;font-size:28px;line-height:36px;margin:2px 0 8px}
+.notes p.lead{color:var(--body);font-size:15px;line-height:23px}
+.notes ul{list-style:none;margin-top:14px;border-top:1px solid var(--line)}
+.notes li{padding:11px 0;border-bottom:1px solid var(--line);color:var(--body);font-size:14.5px;line-height:21px}
+.notes li:last-child{border-bottom:0;padding-bottom:0}
+.notes li b{color:var(--ink);font-weight:600}
+.copy{margin-top:12px;display:flex;flex-direction:column;gap:14px}
+.copy div{font-size:14.5px;color:var(--body);line-height:21px}
+.copy q{display:block;quotes:none;font-weight:600;color:var(--ink);font-size:15px;margin-bottom:2px}
+.copy q::before{content:"“"}.copy q::after{content:"”"}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:13.5px;font-weight:500;height:34px;padding:0 14px;border-radius:999px;background:var(--canvas)}
+.chip small{color:var(--body);font-weight:400;font-size:12.5px}
+.fade{animation:nf .3s ease}
+@keyframes nf{from{opacity:0;transform:translateY(6px)}}
+
+#board{height:calc(100% - 72px);overflow:auto;padding:48px 32px 96px;display:none}
+.row-h{margin:0 0 24px;max-width:900px}
+.row-h .k{font-size:16px;font-weight:500;color:var(--body)}
+.row-h h2{font-weight:700;font-size:36px;line-height:44px;margin-top:2px}
+.row-h p{color:var(--body);font-size:16px;margin-top:4px}
+.brow{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:72px}
+.bp{cursor:pointer;width:min-content}
+.bp .shot{background:var(--softer);border-radius:16px;padding:24px 22px;transition:background .15s}
+.bp:hover .shot{background:var(--soft)}
+.bp .rug{zoom:.5;pointer-events:none}
+.bp .cap{margin-top:14px;max-width:250px}
+.bp .cap b{display:block;font-size:15.5px;font-weight:600}
+.bp .cap span{font-size:14px;color:var(--body);line-height:21px;display:block;margin-top:2px}
+body.board #play{display:none}body.board #board{display:block}
+@media (max-width:1300px){#play{grid-template-columns:260px 1fr}.notes{display:none}}
+@media (max-width:860px){body{overflow:auto}#play{grid-template-columns:1fr;height:auto}.steps{order:2}.bar .tg{display:none}.brand small{display:none}.stage{min-height:760px}}
+</style>
+</head>
+<body>
+<div class="bar">
+  <div class="brand">StockPilot<small>Stock count mismatch</small></div>
+  <button class="tg" id="tDim"><span class="sw"></span>Dim aisle</button>
+  <button class="tg" id="tGl"><span class="sw"></span>Touch targets</button>
+  <div class="tabs"><button id="bPlay" class="on">Play the flow</button><button id="bBoard">All screens</button></div>
+</div>
+
+<main id="play">
+  <aside class="steps">
+    <p class="grp">Getting to the bin</p>
+    <div id="pre"></div>
+    <p class="grp">Core journey · the 4 screens</p>
+    <div id="core"></div>
+    <p class="grp">Additional state</p>
+    <div id="state"></div>
+    <p class="grp">Appendix</p>
+    <div id="extra"></div>
+    <p class="grp">Try it</p>
+    <div class="ctl">
+      <button id="cFail">Make the next scan fail</button>
+      <button id="cRestart">Start again at 14-C-03</button>
+    </div>
+    <p class="keys">Click a <span class="y">yellow</span> side button or press <kbd>Space</kbd> to scan. <kbd>0–9</kbd> to count, <kbd>Enter</kbd> to confirm (hold it to send), <kbd>Esc</kbd> for Back.<br><br>Count <b>96</b> for a mismatch, <b>114</b> for a small gap that saves, or <b>120</b> for a match.</p>
+  </aside>
+  <div class="stage"><div id="dev"></div></div>
+  <aside class="notes" id="notes"></aside>
+</main>
+
+<main id="board">
+  <div class="row-h"><p class="k">The brief · 4 screens</p><h2>Core journey</h2><p>From the scanned bin to sending the gap for approval. Click any screen to play it.</p></div>
+  <div class="brow" data-row="core"></div>
+  <div class="row-h"><p class="k">The brief · 1 additional state</p><h2>Scan failure</h2><p>Glare or a scratched label, and a fallback that can’t send her to the wrong bin.</p></div>
+  <div class="brow" data-row="state"></div>
+  <div class="row-h"><p class="k">Appendix</p><h2>Around the core</h2><p>Not required by the brief: scanning, moving on, the supervisor’s side and a dim aisle.</p></div>
+  <div class="brow" data-row="extra"></div>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.12.2/lottie_light.min.js"></script>
+<script src="app.js"></script>
+<script>
+function rug() { return '<div class="rug"><i class="gd tl"></i><i class="gd tr"></i><i class="gd bl"></i><i class="gd br"></i><button class="trig l" aria-label="Scan trigger"></button><button class="trig r" aria-label="Scan trigger"></button><i class="vol"></i><i class="pwr"></i><div class="shell"></div><div class="face"></div><div class="win"></div><div class="beam"></div><i class="ear"></i><i class="led"></i><div class="rscr"></div><i class="grille"></i></div>'; }
+
+var L = {
+  route: { n: '·', t: 'Next bin', s: 'Where to go next', lead: 'The screen Meena returns to after every bin. It answers: where next, and will I finish in time?',
+    pts: ['<b>No quantity before counting.</b> The item shows so she can spot the wrong product, never how many to expect.', '<b>Item details in a table card</b>, a 56px bin code and directions in words.', '<b>Scan is the one blue button</b>, and the yellow side buttons do the same thing.'],
+    copy: [['On pace for 17:40', 'Answers what she’s really asking with 41 bins left, instead of a bare percentage.'], ['Can’t scan the label?', 'Phrased as her question, so the way out is easy to spot.']],
+    c: [['Progress', 'uiarc'], ['Stat card', 'easyui']] },
+  scan: { n: '·', t: 'Scanning', s: 'Aim, press, done', lead: 'Rugged scanners read barcodes with a laser imager, not the camera. The screen just helps her aim and confirms the read.',
+    pts: ['<b>The device does the work:</b> a red aim beam from the top, a beep and a green LED when it reads.', '<b>The label on screen matches the real one</b>, so she knows what she’s looking for.', '<b>One way out:</b> Cancel, or Android Back.'],
+    copy: [['Aim at the label', 'Three words she can act on with a box in her hand.'], ['Press a yellow button', 'Names the button by the colour she can see, not “trigger” or “SCAN key”.']],
+    c: [['Shimmer text', 'bencho'], ['Animated notification', 'lightswind']] },
+  count: { n: '1', t: 'Blind count', s: 'Count first, compare later', lead: 'After the scan she enters what she sees. The system’s 120 stays hidden so it can’t sway her count.',
+    pts: ['<b>Blind count.</b> If she sees “120” first, she’ll tend to find 120. Hiding it is the cheapest accuracy gain there is.', '<b>Count in cartons of 12.</b> Eight cartons is faster and safer than counting 96 units one by one.', '<b>52px keys and steppers</b> for gloved thumbs. Enter confirms without looking.'],
+    copy: [['Confirm 96 units', 'The button repeats the number and unit, a last check before it counts. “Submit” says nothing.'], ['Count what’s on the shelf. We’ll compare after.', 'Explains why the expected number is missing, so it doesn’t read as a bug.']],
+    c: [['Segmented control', 'useplanes · uiarc'], ['Quantity stepper', 'spectrum ui'], ['Number ticker', 'spectrum ui']] },
+  variance: { n: '2', t: 'Mismatch', s: 'The gap first, then one next step', lead: 'A triple buzz and an amber flash on the scanner’s LED tell her before she looks down. The screen answers: how big, why it matters, what now.',
+    pts: ['<b>The gap is the headline</b>, and the only red on screen.', '<b>The numbers sit in a table card:</b> what she counted, what the system expects, the allowed gap.', '<b>Recount is recommended, not forced</b>, and the likely cause is shown.'],
+    copy: [['24 units short', 'Plain and neutral. Not “Variance −20%”, and nothing that suggests it’s her fault.'], ['Keep 96 and add a reason', 'Says exactly what happens to her number if she skips the recount.']],
+    c: [['Metric card', 'uiarc'], ['Status badge', 'spectrum ui']] },
+  reason: { n: '3', t: 'Reason', s: 'Choose, don’t type', lead: 'Reasons in a card, not a dropdown or a text box. The first is backed by system evidence.',
+    pts: ['<b>No typing in gloves.</b> The whole row is the target.', '<b>Evidence first.</b> The reason that matches the gap shows the system fact behind it, so she confirms instead of investigating.', '<b>One tap to choose.</b> Tapping a row selects it, then Continue.'],
+    copy: [['Why is it short?', 'The question a person would ask out loud.'], ['Matches the gap.', 'The unconfirmed pick is named with its quantity, so the reason carries its own evidence.']],
+    c: [['Radio cards', 'uiarc']] },
+  approve: { n: '4', t: 'Send for approval', s: 'Send it and keep walking', lead: 'Approval is Ravi’s job, not a reason for Meena to stand still. The card is exactly what Ravi will see.',
+    pts: ['<b>Approval runs in the background.</b> The bin stays flagged and her scanner buzzes when Ravi decides.', '<b>Hold to send</b> (under a second). A bump from the box in her other hand can’t send it.', '<b>Ravi next to her?</b> His PIN on her scanner settles it there. Undo lasts 5 seconds.'],
+    copy: [['You don’t need to wait for him.', 'The most important sentence in the flow.'], ['Ravi’s here? Approve with his PIN', 'Describes the real situation, not “Alternative approval”.']],
+    c: [['Hold to confirm', 'uiarc · spectrum · awesmos'], ['Avatar extended', 'spaceui'], ['Approval card', 'useplanes'], ['OTP input', 'kobra'], ['Bottom sheet', 'uiarc'], ['Snackbar + undo', 'spectrum ui']] },
+  fail: { n: '+', t: 'Scan failed', s: 'Additional state', lead: 'Glare and scratched labels happen every day. The screen says what probably went wrong and what to do next.',
+    pts: ['<b>Plain cause and fix:</b> tilt the scanner and hold it 10–30 cm away.', '<b>The fallback is the 2 check digits</b> on the label, not a typed bin code. They prove she’s at the right bin.', 'A red LED blink, then the screen. Wrong digits shake and say so.'],
+    copy: [['Can’t read this label', 'Blames the label, not Meena or the scanner. No error codes.'], ['Those don’t match 14-C-03. Check the bin.', 'Names the bin and gives the one likely fix.']],
+    c: [['OTP input', 'kobra'], ['Form error', 'bencho']] },
+  ravi: { n: '+', t: 'Ravi’s side', s: 'Appendix', lead: 'The loop only closes if approving is fast too. Ravi sees the same card Meena sent.',
+    pts: ['<b>Counted twice with the same number</b>, and the reason with its evidence.', '<b>Hold to approve</b>, or send it back to Meena’s route as a recount.', 'Approving also flags the order whose pick wasn’t confirmed.'],
+    copy: [['Needs your OK', 'Same words as Meena’s screen (“Ravi’s OK”), so both people describe it the same way.']],
+    c: [['Approval card', 'useplanes · beautifului'], ['Hold to confirm', 'uiarc']] }
+};
+var JUMP = { route: {}, count: {}, variance: { counts: [96] }, reason: { counts: [96, 96] }, approve: { counts: [96, 96], reason: 'pick' }, fail: {}, ravi: {} };
+function stepBtn(k) { var d = L[k]; return '<button class="st" data-s="' + k + '"><span class="n">' + d.n + '</span><span><b>' + d.t + '</b><span>' + d.s + '</span></span></button>'; }
+document.getElementById('pre').innerHTML = stepBtn('route') + stepBtn('scan');
+document.getElementById('core').innerHTML = ['count', 'variance', 'reason', 'approve'].map(stepBtn).join('');
+document.getElementById('state').innerHTML = stepBtn('fail');
+document.getElementById('extra').innerHTML = stepBtn('ravi');
+
+var notes = document.getElementById('notes'), lastNote = null;
+function showNotes(k) {
+  document.querySelectorAll('.st').forEach(function (b) { b.classList.toggle('on', b.dataset.s === k); });
+  if (k === lastNote) return; lastNote = k;
+  var d = L[k];
+  notes.innerHTML = '<div class="card fade"><p class="k">' + (d.n === '+' ? d.s : d.n === '·' ? 'Before the core' : 'Screen ' + d.n) + '</p><h2>' + d.t + '</h2><p class="lead">' + d.lead + '</p><ul>' + d.pts.map(function (p) { return '<li>' + p + '</li>'; }).join('') + '</ul></div>' +
+    '<div class="card fade"><p class="k">Copy decisions</p><div class="copy">' + d.copy.map(function (c) { return '<div><q>' + c[0] + '</q>' + c[1] + '</div>'; }).join('') + '</div></div>' +
+    '<div class="card fade"><p class="k">Patterns adapted from</p><div class="chips">' + d.c.map(function (c) { return '<span class="chip">' + c[0] + ' <small>' + c[1] + '</small></span>'; }).join('') + '</div></div>';
+}
+
+/* live device */
+var dev = document.getElementById('dev'); dev.innerHTML = rug();
+var R = dev.querySelector('.rug'), ledT;
+function onSignal(t) {
+  if (t === 'aim') { R.classList.remove('ok', 'warn', 'err'); R.classList.add('aim'); return; }
+  if (t === 'stop') { R.classList.remove('aim'); return; }
+  clearTimeout(ledT); R.classList.remove('ok', 'warn', 'err'); void R.offsetWidth; R.classList.add(t);
+  ledT = setTimeout(function () { R.classList.remove(t); }, 1000);
+}
+var playing = true, scanStep = false;
+var app = StockPilot.mount(R.querySelector('.rscr'), { keys: function () { return playing; }, onChange: function (s, st) { showNotes(st.scan ? 'scan' : s); }, onSignal: function (t) { onSignal(t); if (t === 'aim') showNotes('scan'); } });
+R.querySelectorAll('.trig').forEach(function (b) { b.addEventListener('click', function () { app.trigger(); }); });
+document.querySelector('.steps').addEventListener('click', function (e) {
+  var b = e.target.closest('.st'); if (!b) return;
+  var s = b.dataset.s;
+  if (s === 'scan') { app.jump('route'); setTimeout(app.trigger, 250); return; }
+  app.jump(s, JUMP[s]);
+});
+var cFail = document.getElementById('cFail');
+function disarm() { cFail.classList.remove('armed'); cFail.textContent = 'Make the next scan fail'; }
+cFail.onclick = function () { app.failNext(); cFail.classList.add('armed'); cFail.textContent = 'Next scan will fail. Press Scan.'; if (app.state().scr !== 'route') app.jump('route'); };
+document.getElementById('cRestart').onclick = function () { disarm(); app.reset(); };
+new MutationObserver(function () { if (app.state().scr !== 'route' && cFail.classList.contains('armed')) disarm(); }).observe(R.querySelector('.rscr'), { childList: true });
+
+/* board */
+var PEND = [{ code: '14-C-03', a: 24, short: true, c: 96, unit: 'units', status: 'wait' }];
+var BOARD = [
+  ['core', '1 · Blind count', 'Expected quantity hidden. Counting 8 cartons of 12 instead of counting 96 units one by one.', 'count', { mode: 'p', entry: '8' }],
+  ['core', '2 · Mismatch', '24 short, over the allowed gap. The numbers in a table card, the likely cause below.', 'variance', { counts: [96] }],
+  ['core', '3 · Reason', 'Reasons in a card, the first backed by evidence.', 'reason', { counts: [96, 96], reason: 'pick' }],
+  ['core', '4 · Send for approval', 'The card Ravi will see. Hold to send and walk on.', 'approve', { counts: [96, 96], reason: 'pick' }],
+  ['state', 'Scan failed', 'What probably happened, what to do, and where the check digits are.', 'fail', {}],
+  ['state', 'Check-digit fallback', 'Two digits prove she’s at the right bin.', 'fail', { fmode: 'code', code: '4' }],
+  ['extra', 'Next bin', 'Where to go, what to expect, whether she’ll finish.', 'route', {}],
+  ['extra', 'Scanning', 'Aim at the label, press a yellow button.', 'route', { scan: 'aim' }, 'aim'],
+  ['extra', 'Approval pending', '14-C-03 waits for Ravi while Meena walks to 14-C-04.', 'route', { bi: 1, done: 12, pend: PEND }],
+  ['extra', 'Ravi’s approval', 'The same card Meena sent, with the evidence.', 'ravi', {}],
+  ['extra', 'Dim aisle', 'The screen flips to a dark theme, as Uber does at night.', 'count', { entry: '96' }, null, true]
+];
+var phones = [];
+BOARD.forEach(function (b) {
+  var w = document.createElement('div'); w.className = 'bp';
+  w.innerHTML = '<div class="shot">' + rug() + '</div><div class="cap"><b>' + b[1] + '</b><span>' + b[2] + '</span></div>';
+  document.querySelector('[data-row="' + b[0] + '"]').appendChild(w);
+  if (b[5] === 'aim') w.querySelector('.rug').classList.add('aim');
+  phones.push(StockPilot.mount(w.querySelector('.rscr'), { interactive: false, preset: Object.assign({ scr: b[3] }, b[4]), dim: !!b[6] }));
+  w.onclick = function () { setView('play'); if (b[5] === 'aim') { app.jump('route'); setTimeout(app.trigger, 250); } else app.jump(b[3], b[4]); };
+});
+
+function setView(v) {
+  playing = v === 'play';
+  document.body.classList.toggle('board', !playing);
+  document.getElementById('bPlay').classList.toggle('on', playing);
+  document.getElementById('bBoard').classList.toggle('on', !playing);
+  history.replaceState(null, '', v === 'board' ? '#board' : location.pathname + location.search);
+  if (playing) fit();
+}
+document.getElementById('bPlay').onclick = function () { setView('play'); };
+document.getElementById('bBoard').onclick = function () { setView('board'); };
+function toggle(id, fn) { var b = document.getElementById(id); b.onclick = function () { var on = !b.classList.contains('on'); b.classList.toggle('on', on); fn(on); }; }
+toggle('tDim', function (on) { app.dim(on); });
+toggle('tGl', function (on) { app.gloves(on); phones.forEach(function (p) { p.gloves(on); }); });
+
+function fit() { var s = document.querySelector('.stage'); if (!s.clientHeight) return; var z = Math.min(1, (s.clientHeight - 130) / 904, (s.clientWidth - 48) / 412); s.style.setProperty('--z', Math.max(.45, z).toFixed(3)); }
+addEventListener('resize', fit);
+var h = location.hash.slice(1);
+if (h === 'board') setView('board'); else { fit(); if (L[h] && JUMP[h]) app.jump(h, JUMP[h]); }
+</script>
+</body>
+</html>
